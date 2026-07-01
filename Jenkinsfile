@@ -3,10 +3,16 @@ pipeline {
 
     tools {
         nodejs "Node25" // Configura una instalación de Node.js en Jenkins
-        dockerTool 'DockerTool'  // Cambia el nombre de la herramienta según tu configuración en Jenkins
     }
 
     stages {
+        stage('Verificar Docker') {
+            steps {
+                sh 'docker --version'
+                sh 'docker ps'
+            }
+        }
+
         stage('Construir Imagen Docker') {
             steps {
                 sh 'docker build -t hola-mundo-node:latest .'
