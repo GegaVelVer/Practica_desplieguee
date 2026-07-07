@@ -1,7 +1,8 @@
 const express = require('express');
 const fs = require('fs');
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Archivo JSON que actúa como base de datos
 const DB_FILE = './users.json';
@@ -25,12 +26,13 @@ const writeDatabase = (data) => {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
 };
 
-// CRUD de usuarios
+// Ruta principal
 app.get('/', (req, res) => {
     const msg = {
         message: 'Servidor en ejecucion en el puerto 3000',
         status: 200
-    }
+    };
+
     res.json(msg);
 });
 
@@ -57,7 +59,10 @@ app.post('/users', (req, res) => {
     users.push(newUser);
     writeDatabase(users);
 
-    res.status(201).json({ message: 'User created successfully', user: newUser });
+    res.status(201).json({
+        message: 'User created successfully',
+        user: newUser
+    });
 });
 
 // 3. Actualizar un usuario
@@ -75,7 +80,10 @@ app.put('/users/:id', (req, res) => {
     users[userIndex] = { ...users[userIndex], ...updatedUser };
     writeDatabase(users);
 
-    res.json({ message: 'User updated successfully', user: users[userIndex] });
+    res.json({
+        message: 'User updated successfully',
+        user: users[userIndex]
+    });
 });
 
 // 4. Eliminar un usuario
@@ -94,24 +102,27 @@ app.delete('/users/:id', (req, res) => {
     res.json({ message: 'User deleted successfully' });
 });
 
-// 5. Buscar un usuario
+// 5. Buscar un usuario por ID
 app.get('/users/:id', (req, res) => {
     const users = readDatabase();
     const userId = req.params.id;
-    const updatedUser = req.body;
 
-    const userIndex = users.findIndex((user) => user.id === userId);
+    const user = users.find((user) => user.id === userId);
 
-    if (userIndex === -1) {
+    if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
-
-    const user = users[userIndex]
 
     res.json({ user });
 });
 
-// Iniciar el servidor
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
-});
+// Solo inicia el servidor cuando se ejecuta con npm start.
+// Cuando se ejecuta npm test, Jest importa la app sin abrir el puerto 3000.
+if (require.main === module) {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
+    });
+}
+
+// Exportar app para las pruebas con Jest y Supertest
+module.exports = app;

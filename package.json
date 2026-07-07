@@ -4,9 +4,20 @@
     "description": "Mi aplicación Node.js",
     "main": "index.js",
     "scripts": {
-      "start": "node index.js"
+        "start": "node index.js",
+        "test": "jest"
     },
     "dependencies": {
-      "express": "^4.18.2"
+        "express": "^4.22.2"
+    },
+    "directories": {
+        "test": "tests"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "jest": "^30.4.2",
+        "supertest": "^7.2.2"
     }
-  }
+}
